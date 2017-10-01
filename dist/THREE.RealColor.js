@@ -2708,6 +2708,7 @@
 }).call(this);
 
 },{}],2:[function(require,module,exports){
+(function (global){
 'use strict';
 
 var chroma = require('chroma-js');
@@ -2749,7 +2750,9 @@ function mix(targetColor, progress) {
 
 RealColor.prototype.mix = mix;
 
+global.RealColor = RealColor;
 module.exports = RealColor;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"chroma-js":1}]},{},[2])(2)
 });

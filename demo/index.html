@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>THREE.RealColor demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000000;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #FFFFFF;
+        }
+
+        .info {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 20px;
+        }
+
+        .timer-container {
+            font-family: Courier New, Courier, monospace;
+            position: absolute;
+            width: 100%;
+            top: 20%;
+            left: 0;
+            padding: 20px;
+            font-size: 22px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="timer-container">
+        <span id="mode">rgb</span> mode<br>
+        <span id="timer">0.00</span> seconds
+    </div>
+
+
+    <div class="info">
+        <strong>Instructions:</strong>
+        <br><br> Click anywhre to animate colors.<br> Modes (left to right): RGB, HSL, LAB, LCH
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script src="../dist/THREE.RealColor.min.js"></script>
+    <script>
+        var scene = new THREE.Scene()
+        var renderer = new THREE.WebGLRenderer({
+            antialias: true
+        })
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
+        camera.position.x = 0
+        camera.position.y = 2.5
+        camera.position.z = 5
+
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        document.body.appendChild(renderer.domElement)
+        var orbit = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Light
+        var lights = []
+        lights[0] = new THREE.PointLight(0xffffff, 1, 0)
+        lights[1] = new THREE.PointLight(0xffffff, 1, 0)
+        lights[2] = new THREE.PointLight(0xffffff, 1, 0)
+
+        lights[0].position.set(0, 20, 0)
+        lights[1].position.set(10, 20, 10)
+        lights[2].position.set(- 10, - 20, - 10)
+
+        scene.add(lights[0])
+        scene.add(lights[1])
+        scene.add(lights[2])
+
+        // Meshes
+        var geometry = new THREE.BoxGeometry(1, 1, 1)
+        var material = new THREE.MeshPhongMaterial({
+            color: new RealColor('#156289'),
+            emissive: new RealColor('#072534'),
+            side: THREE.DoubleSide,
+            flatShading: true
+        })
+
+        var meshRGB = new THREE.Mesh(geometry, material)
+        var meshHSL = new THREE.Mesh(geometry, material.clone())
+        var meshLAB = new THREE.Mesh(geometry, material.clone())
+        var meshLCH = new THREE.Mesh(geometry, material.clone())
+        meshRGB.position.x = -3
+        meshHSL.position.x = -1
+        meshLAB.position.x = 1
+        meshLCH.position.x = 3
+        scene.add(meshRGB)
+        scene.add(meshHSL)
+        scene.add(meshLAB)
+        scene.add(meshLCH)
+
+        // Colors
+        var c1 = new RealColor('#FF0000')
+        var c2 = new RealColor('#00FF00')
+        var c3 = new RealColor('#072534')
+        var colors = [c1, c2, c3]
+        colors.push(material.color.clone())
+        var count = colors.length
+        var currentColor = 0
+
+        // Animation
+        var modes = ['rgb', 'hsl', 'lab', 'lch']
+        var tl = new TimelineMax({ paused: true })
+        var timerEl = document.getElementById('timer')
+        var modeEl = document.getElementById('mode')
+        var duration = 4 // in seconds
+
+        function transition() {
+            if (tl) {
+                tl.kill().clear()
+            }
+
+            let cubeIdx = 0
+
+            scene.children.forEach(m => {
+                if (m.type !== 'Mesh') return
+
+
+                var material = m.material
+                var c = colors[currentColor % count]
+                const mixedColor = new RealColor(material.color)
+
+                tl.to({ mode: cubeIdx }, duration, {
+                    onStart: function () {
+                        var modeIdx = this.target.mode
+                        modeEl.innerHTML = modes[modeIdx]
+                        console.log(modeIdx)
+                    },
+                    onUpdate: function () {
+                        var modeIdx = this.target.mode
+                        var progress = this.progress()
+                        timerEl.innerHTML = progress.toFixed(2) // (duration * progress).toFixed(2)
+                        // console.log(progress)
+                        material.color = mixedColor.mix(c, progress, modes[modeIdx])
+                    }
+                }, '+=0')
+
+                cubeIdx++
+            })
+            currentColor++
+
+            tl.play()
+        }
+
+        document.body.addEventListener('click', transition)
+
+
+        // Animate
+        var animate = function () {
+            requestAnimationFrame(animate)
+
+            renderer.render(scene, camera)
+
+        };
+        animate();
+    </script>
+</body>
+
+</html>

@@ -35,4 +35,5 @@ function mix (targetColor, progress, mode = 'rgb') {
 
 RealColor.prototype.mix = mix
 
+global.RealColor = RealColor
 module.exports = RealColor
