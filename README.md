@@ -2,4 +2,4 @@
 
 Color class that extends THREE.Color with functions to deal with perceptual colors and interpolation.
 
-[image]: https://github.com/taseenb/THREE.RealColor/raw/master/realcolor-screenshot.jpg "THREE.RealColor"
+[image]: https://raw.githubusercontent.com/taseenb/THREE.RealColor/master/realcolor-screenshot.jpg "THREE.RealColor"
