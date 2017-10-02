@@ -1,6 +1,8 @@
 # THREE.RealColor
 
-Color class that extends THREE.Color with functions to deal with perceptual colors and interpolation.
+Class that extends THREE.Color with functions to deal with perceptual colors, interpolation and formatting.
+
+Color management is based on [chroma.js](https://github.com/gka/chroma.js/)
 
 ![THREE.RealColor][image]
 

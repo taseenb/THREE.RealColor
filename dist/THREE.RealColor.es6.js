@@ -69,21 +69,22 @@ function to255 () {
 /**
  * Mix
  *
- * Returns the linear blend of startColor and endColor, based on progress (value from 0 to 1).
+ * Blends startColor and endColor, based on progress (value from 0 to 1).
  * @param startColor Color 1
  * @param endColor Color 2
  * @param progress Value from 0 to 1
  * @param mode Color mode can be rgb, hsl, lab, lch
  */
-function mix (targetColor, progress, mode = 'rgb') {
-  // chroma.mix(startColor, endColor, this.progress(), 'lab').gl()
-
-  if (targetColor && targetColor.isColor) {
-    targetColor = targetColor.getHex()
+function mix (startColor, endColor, progress, mode = 'rgb') {
+  if (startColor && startColor.isColor) {
+    startColor = startColor.toArray255()
   }
 
-  const thisColor = this.getHex()
-  const mixed = chroma.mix(thisColor, targetColor, progress, mode).gl()
+  if (endColor && endColor.isColor) {
+    endColor = endColor.toArray255()
+  }
+
+  const mixed = chroma.mix(startColor, endColor, progress, mode).gl()
   this.r = mixed[0]
   this.g = mixed[1]
   this.b = mixed[2]
@@ -92,16 +93,16 @@ function mix (targetColor, progress, mode = 'rgb') {
 }
 
 /**
- * Mix From To
+ * Mix From To [STATIC]
  *
- * Same as Mix but returns a new RealColor instance. It also requires a start color.
+ * Same as Mix but returns a new RealColor instance.
  */
-function mixFromTo (startColor, targetColor, progress, mode = 'rgb') {
-  var c = chroma.mix(startColor, targetColor, progress, mode).gl()
+function mixFromTo (startColor, endColor, progress, mode = 'rgb') {
+  var color = new RealColor()
 
-  // {r: c[0], g: c[1], b: c[2]}
+  color.mix(startColor, endColor, progress, mode)
 
-  return new RealColor(c[0], c[1], c[2])
+  return color
 }
 
 // Methods

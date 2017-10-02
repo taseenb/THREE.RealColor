@@ -129,7 +129,7 @@
             duration: 2,
             random: randomColors,
             invert: invertColors,
-            animate: transition
+            animate: interpolateColors
         }
         var gui = setupGUI(params, modes)
         var startController = gui.__controllers.find(e => e.property === 'start')
@@ -151,30 +151,25 @@
             endController.setValue(end)
         }
 
-        // Animation
+        // Animate color interpolation
         var modeTitleEl = document.getElementById('mode-title')
         var timerEl = document.getElementById('timer')
-        var startColor, endColor
+        var startColor = new RealColor()
+        var endColor = new RealColor()
+        var mixedColor = new RealColor()
 
-        function transition() {
+        function interpolateColors() {
             // Start color
-            startColor = '#' + new RealColor().fromArray255(params.start).getHexString()
+            startColor.fromArray255(params.start)
 
             // Target color
-            endColor = '#' + new RealColor().fromArray255(params.end).getHexString()
-
-            // Print sample mixed colors in the console
-            printColors(startColor, endColor)
-
-            // Animate transition
-            tween(startColor, endColor)
-        }
-
-        function tween(start, end, isBack) {
-            if (!start || !end) return
+            endColor.fromArray255(params.end)
 
             var mode = params.mode.toLowerCase()
             var duration = params.duration
+
+            // Print sample mixed colors in the console
+            printColors(startColor, endColor)
 
             resetTween()
 
@@ -182,9 +177,9 @@
                 onUpdate: function () {
                     var progress = this.progress()
 
-                    material.color = RealColor.mixFromTo(
-                        start,
-                        end,
+                    material.color = mixedColor.mix(
+                        startColor,
+                        endColor,
                         progress,
                         mode
                     )
@@ -203,7 +198,7 @@
 
         function printColors(start, end) {
             console.log(
-                params.mode + ' transition: %c ' + start + ' %c ' + end + ' ',
+                params.mode + ' interpolation: %c ' + start + ' %c ' + end + ' ',
                 'background: ' + start + '; color: white',
                 'background: ' + end + '; color: white'
             )
@@ -217,19 +212,19 @@
             var s5 = RealColor.mixFromTo(start, end, 0.8, mode)
             var s6 = RealColor.mixFromTo(start, end, 1, mode)
 
-            var css1 = `background: ${s1.getStyle()}; color: white`
-            var css2 = `background: ${s2.getStyle()}; color: white`
-            var css3 = `background: ${s3.getStyle()}; color: white`
-            var css4 = `background: ${s4.getStyle()}; color: white`
-            var css5 = `background: ${s5.getStyle()}; color: white`
-            var css6 = `background: ${s6.getStyle()}; color: white`
+            var css1 = `background: ${s1.getStyle()}; color: white; font-family: monospace`
+            var css2 = `background: ${s2.getStyle()}; color: white; font-family: monospace`
+            var css3 = `background: ${s3.getStyle()}; color: white; font-family: monospace`
+            var css4 = `background: ${s4.getStyle()}; color: white; font-family: monospace`
+            var css5 = `background: ${s5.getStyle()}; color: white; font-family: monospace`
+            var css6 = `background: ${s6.getStyle()}; color: white; font-family: monospace`
 
-            console.log(`%c ${s1.formatted()} `, css1)
-            console.log(`%c ${s2.formatted()} `, css2)
-            console.log(`%c ${s3.formatted()} `, css3)
-            console.log(`%c ${s4.formatted()} `, css4)
-            console.log(`%c ${s5.formatted()} `, css5)
-            console.log(`%c ${s6.formatted()} `, css6)
+            console.log(`0.0 - %c ${s1.formatted()} `, css1)
+            console.log(`0.2 - %c ${s2.formatted()} `, css2)
+            console.log(`0.4 - %c ${s3.formatted()} `, css3)
+            console.log(`0.6 - %c ${s4.formatted()} `, css4)
+            console.log(`0.8 - %c ${s5.formatted()} `, css5)
+            console.log(`1.0 - %c ${s6.formatted()} `, css6)
         }
 
         // Dat.GUI
