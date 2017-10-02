@@ -2721,6 +2721,28 @@ RealColor.prototype = Object.create(THREE.Color.prototype);
 
 RealColor.prototype.constructor = RealColor;
 
+function convertToChromaJs(color) {
+  return chroma(getChromaJsCompatible(color));
+}
+
+function getChromaJsCompatible(color) {
+  if (color && color.isColor) {
+    color = color.toArray255();
+  }
+
+  return color;
+}
+
+function convertFromChromaJs(color) {
+  var c = color.gl();
+
+  this.r = c[0];
+  this.g = c[1];
+  this.b = c[2];
+
+  return this;
+}
+
 /**
  * Random
  *
@@ -2795,20 +2817,12 @@ function to255() {
 function mix(startColor, endColor, progress) {
   var mode = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'rgb';
 
-  if (startColor && startColor.isColor) {
-    startColor = startColor.toArray255();
-  }
+  startColor = getChromaJsCompatible(startColor);
+  endColor = getChromaJsCompatible(endColor);
 
-  if (endColor && endColor.isColor) {
-    endColor = endColor.toArray255();
-  }
+  var mixed = chroma.mix(startColor, endColor, progress, mode);
 
-  var mixed = chroma.mix(startColor, endColor, progress, mode).gl();
-  this.r = mixed[0];
-  this.g = mixed[1];
-  this.b = mixed[2];
-
-  return this;
+  return this.convertFromChromaJs(mixed);
 }
 
 /**
@@ -2826,7 +2840,32 @@ function mixFromTo(startColor, endColor, progress) {
   return color;
 }
 
+function darken(value) {
+  var c = convertToChromaJs(this).darken(value);
+  return this.convertFromChromaJs(c);
+}
+
+function brighten(value) {
+  var c = convertToChromaJs(this).brighten(value);
+  return this.convertFromChromaJs(c);
+}
+
+function saturate(value) {
+  var c = convertToChromaJs(this).saturate(value);
+  return this.convertFromChromaJs(c);
+}
+
+function desaturate(value) {
+  var c = convertToChromaJs(this).desaturate(value);
+  return this.convertFromChromaJs(c);
+}
+
 // Methods
+RealColor.prototype.darken = darken;
+RealColor.prototype.brighten = brighten;
+RealColor.prototype.saturate = saturate;
+RealColor.prototype.desaturate = desaturate;
+RealColor.prototype.convertFromChromaJs = convertFromChromaJs;
 RealColor.prototype.random = random;
 RealColor.prototype.formatted = formatted;
 RealColor.prototype.toArray255 = toArray255;
@@ -2835,6 +2874,8 @@ RealColor.prototype.to255 = to255;
 RealColor.prototype.mix = mix;
 
 // Static methods
+RealColor.convertToChromaJs = convertToChromaJs;
+RealColor.getChromaJsCompatible = getChromaJsCompatible;
 RealColor.mixFromTo = mixFromTo;
 
 global.RealColor = RealColor;
