@@ -3213,12 +3213,11 @@ function random() {
 /**
  * Get a random attractive color.
  * Based on https://github.com/davidmerfield/randomColor
- * 
+ *
  * @param {Object} options See https://github.com/davidmerfield/randomColor
  */
 function attractiveRandom(options) {
-
-  return randomcolor(options);
+  return this.setStyle(randomcolor(options));
 }
 
 /**
