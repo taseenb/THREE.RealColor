@@ -1,4 +1,5 @@
 const chroma = require('chroma-js')
+const randomcolor = require('randomcolor')
 
 function RealColor (r, g, b) {
   THREE.Color.call(this, r, g, b)
@@ -39,6 +40,17 @@ function random () {
   this.setStyle(chroma.random())
 
   return this
+}
+
+/**
+ * Get a random attractive color.
+ * Based on https://github.com/davidmerfield/randomColor
+ * 
+ * @param {Object} options See https://github.com/davidmerfield/randomColor
+ */
+function attractiveRandom(options) {
+
+  return randomcolor(options)
 }
 
 /**
@@ -145,6 +157,7 @@ RealColor.prototype.brighten = brighten
 RealColor.prototype.saturate = saturate
 RealColor.prototype.desaturate = desaturate
 RealColor.prototype.convertFromChromaJs = convertFromChromaJs
+RealColor.prototype.attractiveRandom = attractiveRandom
 RealColor.prototype.random = random
 RealColor.prototype.formatted = formatted
 RealColor.prototype.toArray255 = toArray255
