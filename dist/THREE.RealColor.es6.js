@@ -112,8 +112,6 @@ function mix (startColor, endColor, progress, mode = 'rgb') {
   startColor = getChromaJsCompatible(startColor)
   endColor = getChromaJsCompatible(endColor)
 
-  console.log(startColor, endColor)
-
   const mixed = chroma.mix(startColor, endColor, progress, mode)
 
   return this.convertFromChromaJs(mixed)
